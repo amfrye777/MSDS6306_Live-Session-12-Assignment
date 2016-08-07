@@ -1,0 +1,86 @@
+/* Live Session Unit 12 Assignment */
+/* Download and import files into SAS using the code below */
+/* There is code for .xlsx, .xls, and .csv files */
+/* Merge the files into ONE Excel or CSV file */
+/* Commit the file to GitHub */
+/* Post link to Live session unit 12 by next Monday/s live session */
+/* If you have to, you can physically import the files to your computer. */
+
+/* Code to Import dataset1.sas7bdat from SAS library MSDS6306SASData */
+/********** Note the following - READ THIS ************************/
+/* Assumes use of apps.smu.edu version of SAS 9.4 on a Mac                               */
+/* Also assumes that the data dataset1.sas7bdat is in a folder called MSDS6306SASData    */
+/* on the desktop of the computer. Your path name will probably be different             */
+/*************************************************************************/
+
+/* First, link the name msds6306 with the SAS library using libname command */
+libname msds6306 'c:\Users\20224910\Desktop\Courses\MSDS6306Work';
+/* Now change the data name to avoid overwriting and because it's just too long. */
+data edData;
+set msds6306.dataset1;
+run;
+/* Let's see what we have! */
+proc contents data=edData; run;
+
+
+/******** Some Links to other data ***********/
+/* From Section 402 as of 10:30 p.m. on Monday, August 1 
+https://github.com/BlDavenport/population-density-file
+https://github.com/amfrye777/MSDS6306_Live-Session-11-Assignment/blob/master
+https://github.com/jdquick/SATandACTStudy
+https://raw.githubusercontent.com/rlisbona/Unit11SATACT/master/Analysis/Clean/2014PublicPrivateSchoolsClean.csv
+https://github.com/data-redraider/Homework_Aug1/blob/master/ACS_14_5YR_GCT1105.US01PR.xls
+https://raw.githubusercontent.com/ChrisBoomhower/MSDS6306_HwUploads/master/PostLiveSession_HW11/PercentAPStudent.csv
+https://github.com/celiatsmuedu/MSDS6306402HW11Education/blob/master/AverageClassSizeByState.xlsx
+****************************************************/
+/* I got these links from Week 11 Homework. That is where you were supposed to submit the link. */
+ 
+/******* Now modify the code below to import data from the links above *******/
+/********************** WARNING: THIS WILL BE MESSY !!!!!! *******************/
+data streaming;
+infile _inbox "%sysfunc(getoption(work))/streaming.csv";
+proc http method="get" 
+ url="https://raw.githubusercontent.com/amfrye777/MSDS6306_Live-Session-11-Assignment/master/DeathPenaltyStatsNotMerged.csv" 
+ out=_inbox
+ /* proxyhost="http://yourproxy.company.com" */
+;
+run;
+* filename _inbox clear;
+proc contents data=streaming;
+run;
+
+filename _inbox "%sysfunc(getoption(work))/streaming.csv";
+proc http method="get" 
+ url="https://raw.githubusercontent.com/amfrye777/MSDS6306_Live-Session-11-Assignment/master/DeathPenaltyStatsNotMerged.csv" 
+ out=_inbox
+ /* proxyhost="http://yourproxy.company.com" */
+;
+run;
+* filename _inbox clear;
+proc contents data=streaming;
+run;
+
+/* Import Excel Files */
+
+filename _inbox "%sysfunc(getoption(work))/stream2.xlsx"; 
+proc http method="get"  
+url="https://github.com/anabbott/Education/blob/master/AAbbottEducation.xlsx?raw=true"  
+out=_inbox /* proxyhost="http://yourproxy.company.com" */;
+run; 
+proc import file = _inbox out = foo dbms=xlsx; 
+getnames = yes;
+run;
+proc print data=work.foo;
+run;
+
+filename _inbox "%sysfunc(getoption(work))/stream2.xls"; 
+proc http method="get"  
+ url="https://github.com/data-redraider/Homework_Aug1/blob/master/ACS_14_5YR_GCT1105.US01PR.xls?raw=TRUE"
+out=_inbox /* proxyhost="http://yourproxy.company.com" */;
+run; 
+proc import file = _inbox out = foo2 dbms=xls; 
+/* for old .xls files, use dbms=xls */
+getnames = yes;
+run;
+proc print data=work.foo2;
+run;
